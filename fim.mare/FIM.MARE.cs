@@ -32,6 +32,13 @@ namespace FIM.MARE
 
     public class RulesExtension : IMASynchronization
     {
+
+        const long ADS_UF_NORMAL_ACCOUNT = 0x200;
+        const long ADS_UF_ACCOUNTDISABLE = 0x2;
+        const long ADS_UF_PASSWD_NOTREQD = 0x0020;
+        const string USER_ACCOUNT_CONTROL_PROP = "userAccountControl";
+
+
         public Configuration config = null;
 
         public RulesExtension()
@@ -159,14 +166,15 @@ namespace FIM.MARE
                     return DeprovisionAction.Disconnect;
             }
         }
+
         DeprovisionAction IMASynchronization.Deprovision(CSEntry csentry)
         {
-            Tracer.TraceInformation("enter-deprovision");
+            Tracer.TraceWarning("enter-deprovision");
             List<DeprovisionOption> rules = null;
             try
             {
                 string maName = csentry.MA.Name;
-                Tracer.TraceInformation("ma: {1}, dn: {2}", maName, csentry.DN);
+                Tracer.TraceWarning($"ma: {maName}, dn: {csentry.DN}");
 
                 ManagementAgent ma = config.ManagementAgent.FirstOrDefault(m => m.Name.Equals(maName));
                 if (ma == null) throw new NotImplementedException("management-agent-" + maName + "-not-found");
@@ -175,18 +183,28 @@ namespace FIM.MARE
 
                 if (rules == null)
                 {
-                    Tracer.TraceInformation("no-rules-defined-returning-default-action", ma.DeprovisionRule.DefaultOperation);
+                    Tracer.TraceWarning($"no-rules-defined-returning-default-action {ma.DeprovisionRule.DefaultOperation}");
                     return FromOperation(ma.DeprovisionRule.DefaultOperation);
                 }
 
                 foreach (DeprovisionOption r in rules)
                 {
-                    Tracer.TraceInformation("found-option name: {0}, description: {1}", r.Name, r.Description);
+                    Tracer.TraceWarning($"found-option name: {r.Name}, description: {r.Description}");
                 }
 
-                //DeprovisionRule rule = rules.Where(ru => ru.Conditions.AreMet(csentry, mventry)).FirstOrDefault();
+                var action = ma.DeprovisionRule.DefaultOperation;
 
-                return FromOperation(ma.DeprovisionRule.DefaultOperation);
+                Tracer.TraceWarning($"Applying default deprovisioning operation : {action}");
+
+                switch (action)
+                {
+                    case DeprovisionOperation.Disable:
+                        return InvokeMvEntryDisable(csentry);
+                        break;
+                    default:
+                        Tracer.TraceError("No default action");
+                        return DeprovisionAction.Disconnect;
+                }
             }
             catch (Exception ex)
             {
@@ -202,6 +220,24 @@ namespace FIM.MARE
                 }
                 Tracer.TraceInformation("exit-deprovision");
             }
+
+        }
+
+        public DeprovisionAction InvokeMvEntryDisable(CSEntry csentry)
+        {
+            Tracer.TraceWarning($"disabling account {csentry}");
+            long currentValue = ADS_UF_NORMAL_ACCOUNT;
+            if (csentry[USER_ACCOUNT_CONTROL_PROP].IsPresent)
+            {
+                currentValue = csentry[USER_ACCOUNT_CONTROL_PROP].IntegerValue;
+                csentry[USER_ACCOUNT_CONTROL_PROP].IntegerValue = currentValue | ADS_UF_ACCOUNTDISABLE;// | ADS_UF_PASSWD_NOTREQD;
+            }
+            else
+            {
+                Trace.TraceError("userAccountControlProp not present in connector space");
+            }           
+
+            return FromOperation(DeprovisionOperation.Disable);
         }
 
         public void MapAttributesForImportExportDetached(string FlowRuleName, CSEntry csentry, MVEntry mventry, Direction direction)

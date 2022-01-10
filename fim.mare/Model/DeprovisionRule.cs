@@ -13,7 +13,10 @@ namespace FIM.MARE
 		[XmlEnum(Name = "Delete")]
 		Delete,
 		[XmlEnum(Name = "ExplicitDisconnect")]
-		ExplicitDisconnect
+		ExplicitDisconnect,
+		[XmlEnum(Name = "Disable")]
+		Disable
+
 	}
 
 	public class DeprovisionRule
