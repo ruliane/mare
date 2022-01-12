@@ -15,22 +15,35 @@ namespace FIM.MARE
 		[XmlEnum(Name = "ExplicitDisconnect")]
 		ExplicitDisconnect,
 		[XmlEnum(Name = "Disable")]
-		Disable
+		Disable,
+		[XmlEnum(Name = "Flag")]
+		Flag,
+		[XmlEnum(Name = "Move")]
+		Move,
 
 	}
 
 	public class DeprovisionRule
 	{
-		[XmlAttribute("DefaultOperation")]
+
+		[XmlAttribute("Name")]
 		[XmlTextAttribute()]
-		public DeprovisionOperation DefaultOperation { get; set; }
+		public string Name { get; set; }
+
+		[XmlAttribute("Description")]
+		[XmlTextAttribute()]
+		public string Description { get; set; }
+
+		[XmlAttribute("Operation")]
+		[XmlTextAttribute()]
+		public DeprovisionOperation Operation { get; set; }
 
 		[XmlElement("Option")]
-		public List<DeprovisionOption> DeprovisionOption { get; set; }
+		public List<DeprovisionOption> DeprovisionOptions { get; set; }
 
 		public DeprovisionRule()
 		{
-			this.DeprovisionOption = new List<DeprovisionOption>();
+			this.DeprovisionOptions = new List<DeprovisionOption>();
 		}
 	}
 
@@ -44,6 +57,15 @@ namespace FIM.MARE
 		[XmlAttribute("Action")]
 		[XmlTextAttribute()]
 		public DeprovisionOperation Action { get; set; }
+
+		[XmlAttribute("TargetOU")]
+		public string TargetOU { get; set; }
+
+		[XmlAttribute("FlagMessage")]
+		public string FlagMessage { get; set; }
+
+		[XmlAttribute("FlagField")]
+		public string FlagField { get; set; }
 
 		[XmlElement("Conditions")]
 		public Conditions Conditions { get; set; }

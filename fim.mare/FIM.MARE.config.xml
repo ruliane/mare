@@ -6,13 +6,12 @@
 	
   <ManagementAgent Name="AD2">
 
-    <DeprovisionRule DefaultOperation="Disable">
-		<!--<Option Name="" Description="" Action="">
-		    <Conditions Operator="And">
-				<Condition xsi:type="SourceValueMatch" Source="MVEntry" AttributeName="accountName" Pattern="^SG$" />
-			</Conditions>
-		</Option>-->
-    </DeprovisionRule>
+    <DeprovisionRule Name="DisableAndFlagDeletedAccount" Description="Desactivation et flag suite suppression">
+		<Option Name="DisableAccount" Action="Disable" Description="Desactivation du compte"/>
+		<Option Name="FlagAccount" Action="Flag" FlagMessage="Account disabled by MIM" FlagField="description" Description="Ajout d'un flag sur le compte"/>
+		<Option Name="MoveToNewOU" Action="Move" TargetOU ="OU=Disabled users,DC=ad2,DC=local" Description="Changement d'OU pour le compte"/>
+	</DeprovisionRule>
+
 
     <JoinRule Name="CleanAccountName">
       <SourceExpression>

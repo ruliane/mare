@@ -170,7 +170,6 @@ namespace FIM.MARE
         DeprovisionAction IMASynchronization.Deprovision(CSEntry csentry)
         {
             Tracer.TraceWarning("enter-deprovision");
-            List<DeprovisionOption> rules = null;
             try
             {
                 string maName = csentry.MA.Name;
@@ -179,32 +178,41 @@ namespace FIM.MARE
                 ManagementAgent ma = config.ManagementAgent.FirstOrDefault(m => m.Name.Equals(maName));
                 if (ma == null) throw new NotImplementedException("management-agent-" + maName + "-not-found");
 
-                rules = ma.DeprovisionRule.DeprovisionOption.ToList<DeprovisionOption>();
+                DeprovisionRule rule = ma.DeprovisionRule;
 
-                if (rules == null)
+                if (rule == null)
                 {
-                    Tracer.TraceWarning($"no-rules-defined-returning-default-action {ma.DeprovisionRule.DefaultOperation}");
-                    return FromOperation(ma.DeprovisionRule.DefaultOperation);
+                    Tracer.TraceWarning($"no-Deprovisioningrules-defined for {ma.Name} Disconnecting entry");
+                    return DeprovisionAction.Disconnect;
                 }
 
-                foreach (DeprovisionOption r in rules)
+                if (!rule.DeprovisionOptions.Any())
                 {
-                    Tracer.TraceWarning($"found-option name: {r.Name}, description: {r.Description}");
+                    Tracer.TraceWarning($"no Action or Option for {rule.Name} Disconnecting entry");
+                    return DeprovisionAction.Disconnect;
                 }
 
-                var action = ma.DeprovisionRule.DefaultOperation;
-
-                Tracer.TraceWarning($"Applying default deprovisioning operation : {action}");
-
-                switch (action)
+                foreach (DeprovisionOption option in rule.DeprovisionOptions)
                 {
-                    case DeprovisionOperation.Disable:
-                        return InvokeMvEntryDisable(csentry);
-                        break;
-                    default:
-                        Tracer.TraceError("No default action");
-                        return DeprovisionAction.Disconnect;
+                    Tracer.TraceWarning($"found-DeprovisionOption name: {option.Name}, description: {option.Description}, action : {option.Action}");
+                    
+                    switch (option.Action)
+                    {
+                        case DeprovisionOperation.Disable:
+                            InvokeCsEntryDisable(csentry);
+                            break;
+                        case DeprovisionOperation.Flag:
+                            invokeCsEntryFlag(csentry, option);
+                            break;
+                        case DeprovisionOperation.Move:
+                            invokeCsEntryMove(csentry, option);
+                            break;
+                        default:
+                            Tracer.TraceError("No action, disconnecting");
+                            break;
+                    }
                 }
+                return DeprovisionAction.Disconnect;
             }
             catch (Exception ex)
             {
@@ -213,17 +221,12 @@ namespace FIM.MARE
             }
             finally
             {
-                if (rules != null)
-                {
-                    rules?.Clear();
-                    rules = null;
-                }
                 Tracer.TraceInformation("exit-deprovision");
             }
 
         }
 
-        public DeprovisionAction InvokeMvEntryDisable(CSEntry csentry)
+        public DeprovisionAction InvokeCsEntryDisable(CSEntry csentry)
         {
             Tracer.TraceWarning($"disabling account {csentry}");
             long currentValue = ADS_UF_NORMAL_ACCOUNT;
@@ -238,6 +241,44 @@ namespace FIM.MARE
             }           
 
             return FromOperation(DeprovisionOperation.Disable);
+        }
+
+        public DeprovisionAction invokeCsEntryFlag(CSEntry csentry, DeprovisionOption o)
+        {
+            try
+            {
+                var message = o.FlagMessage;
+                if (string.IsNullOrEmpty(o.FlagField))
+                {
+                    Tracer.TraceError($"Flag option {o.Name} missing target field");
+                }
+                if (string.IsNullOrEmpty(message))
+                {
+                    Tracer.TraceError($"Flag Message not set for {o.Name} using default message");
+                    message = $"Account flagged by MIM on {DateTime.Now.ToString("yyyy-MM-dd")}";
+                }
+
+                csentry[o.FlagField].Value = message + " " + DateTime.Now.ToString("yyyy-MM-dd");
+            }
+            catch (Exception ex)
+            {
+                Tracer.TraceError($"Error flagging account {ex.Message}");
+                throw;
+            }
+
+            return FromOperation(DeprovisionOperation.Flag);
+        }
+
+        public DeprovisionAction invokeCsEntryMove(CSEntry csentry, DeprovisionOption o)
+        {
+            Tracer.TraceWarning($"Actual OU for CSEntry : {csentry.DN.ToString()}");
+
+            string rdn = "CN=" + csentry["cn"].Value;
+            var ma = Utils.MAs[csentry.MA.Name];
+            ReferenceValue dn = ma.EscapeDNComponent(rdn).Concat(o.TargetOU);
+            csentry.DN = dn;
+
+            return FromOperation(DeprovisionOperation.Move);
         }
 
         public void MapAttributesForImportExportDetached(string FlowRuleName, CSEntry csentry, MVEntry mventry, Direction direction)
