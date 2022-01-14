@@ -4,3 +4,10 @@ FIM/MIM R2 MA Rules Extension Framework (hereafter FIM.MARE) is a framework for 
 It enables FIM administrators to, declaratively, create advanced flow rules with a vast number of transform functions and even conditions for FIM2010 R2. This framework can be used as a replacement for Synchronization Rules (SR's) or as a supplement to these by using the FIM Synchronization Service to setup the advanced rules.
 
 FIM.MARE reads declared flow rules from an XML configuration file which contains information about the management agent rules available.
+
+
+# Differences with the original project (sorengranfeldt/mare)
+This fork implements the following improvements:
+- Ability to get attributes from multiple connectors
+- Support for multi-valued target attributes
+- Custom deprovisionning (work in progress)
