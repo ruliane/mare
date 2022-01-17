@@ -312,7 +312,7 @@ namespace FIM.MARE
 
         public void InvokeFlowRule(FlowRule rule, CSEntry csentry, MVEntry mventry)
         {
-            Tracer.TraceWarning("enter-invokeflowrule {0}", 1, rule.Name); // TODO: revert to TraceInformation
+            Tracer.TraceInformation("enter-invokeflowrule {0}", rule.Name);
             try
             {
                 FlowRule r = (FlowRule)rule;
@@ -327,13 +327,13 @@ namespace FIM.MARE
                         object val = null;
                         if (string.IsNullOrEmpty(source.FromOtherConnector))
                         {
-                            Tracer.TraceWarning("Getting values from local connector, MultiValueAttribute {0}...", 1, ((MultiValueAttribute)source).Name); //TODO: remove this line
+                            Tracer.TraceInformation("Getting values from local connector, MultiValueAttribute {0}...", ((MultiValueAttribute)source).Name);
                             val = ((MultiValueAttribute)source).GetValueOrDefault(r.Direction, csentry, mventry);
                         }
                         else
                         {
                             // Lookup csentry in other CS
-                            Tracer.TraceWarning("Getting values from connector {0}, MultiValueAttribute {1}", 1, source.FromOtherConnector, ((MultiValueAttribute)source).Name); //TODO: remove this line
+                            Tracer.TraceInformation("Getting values from connector {0}, MultiValueAttribute {1}", source.FromOtherConnector, ((MultiValueAttribute)source).Name);
                             ConnectedMA ConnectedManagementAgent = mventry.ConnectedMAs[source.FromOtherConnector];
                             if (ConnectedManagementAgent == null)
                             {
@@ -341,11 +341,11 @@ namespace FIM.MARE
                                 continue;
                             }
 
-                            Tracer.TraceWarning("Found {0} connector(s) in MA {1}", 1, ConnectedManagementAgent.Connectors.Count, source.FromOtherConnector); //TODO: remove this line
+                            Tracer.TraceInformation("Found {0} connector(s) in MA {1}", ConnectedManagementAgent.Connectors.Count, source.FromOtherConnector);
                             // In some cases, several connectors might be connected to a single metaverse object so we get one of them
                             foreach (CSEntry ConnectorSpaceEntry in ConnectedManagementAgent.Connectors)
                             {
-                                Tracer.TraceWarning("Reading attribute {1} on {0}", 1, ConnectorSpaceEntry.ToString(), ((MultiValueAttribute)source).Name); //TODO: remove this line
+                                Tracer.TraceInformation("Reading attribute {1} on {0}", ConnectorSpaceEntry.ToString(), ((MultiValueAttribute)source).Name);
                                 val = ((MultiValueAttribute)source).GetValueOrDefault(r.Direction, ConnectorSpaceEntry, mventry);
                             }
                         }
@@ -354,7 +354,7 @@ namespace FIM.MARE
                         if (val != null)
                         {
                             // Step 2: Apply Transforms on Source Attribute
-                            Tracer.TraceWarning("Applying transforms on source MultiValueAttribute..."); //TODO: remove this line
+                            Tracer.TraceInformation("Applying transforms on source MultiValueAttribute...");
                             Object concateValue = source.Transform(val, TransformDirection.Source);
 
                             // Step 3: Add (transformed) value to list
@@ -375,7 +375,7 @@ namespace FIM.MARE
                         string val = null;
                         if (string.IsNullOrEmpty(source.FromOtherConnector))
                         {
-                            Tracer.TraceWarning("Getting value from local connector, Attribute {0}...", 1, ((Attribute)source).Name); //TODO: remove this line
+                            Tracer.TraceInformation("Getting value from local connector, Attribute {0}...", ((Attribute)source).Name);
                             val = ((Attribute)source).GetValueOrDefault(r.Direction, csentry, mventry);
                         }
                         else
@@ -448,7 +448,7 @@ namespace FIM.MARE
                 }
 
                 // Step 4: Apply Transforms on Target
-                Tracer.TraceWarning("Applying transforms on target...", 1); // TODO: switch to TraceInformation()
+                Tracer.TraceInformation("Applying transforms on target...");
                 //List<object>transformedValues = (List<object>)r.Target.Transform(listTargetValue, TransformDirection.Target);
                 listTargetValue = (List<object>)r.Target.Transform(listTargetValue, TransformDirection.Target);
 
@@ -457,7 +457,7 @@ namespace FIM.MARE
                 if (rule.Direction == Direction.Import && !(mventry[r.Target.Name].IsMultivalued) || 
                     rule.Direction == Direction.Export && !(csentry[r.Target.Name].IsMultivalued))
                 {
-                    Tracer.TraceWarning("Target is monovalued, concatenating values.", 1); // TODO: switch to TraceInformation()
+                    Tracer.TraceInformation("Target is monovalued, concatenating values.");
                     foreach (object targetValue in listTargetValue)
                     {
                         strValue += targetValue.ToString(); // target Value or targetValue.toString() ?
@@ -469,13 +469,13 @@ namespace FIM.MARE
                 if (rule.Direction == Direction.Import && mventry[r.Target.Name].IsMultivalued || 
                     rule.Direction == Direction.Export && csentry[r.Target.Name].IsMultivalued)
                 {
-                    Tracer.TraceWarning("Committing values {1} to target attribute {0}...", 1, r.Target.Name, listTargetValue); // TODO: switch to TraceInformation()
+                    Tracer.TraceInformation("Committing values {1} to target attribute {0}...", r.Target.Name, listTargetValue);
                     r.Target.SetTargetValue(r.Direction, csentry, mventry, listTargetValue);
 
                 }
                 else
                 {
-                    Tracer.TraceWarning("Committing string {1} to target attribute {0}...", 1, r.Target.Name, strValue); // TODO: switch to TraceInformation()
+                    Tracer.TraceInformation("Committing string {1} to target attribute {0}...", r.Target.Name, strValue);
                     r.Target.SetTargetValue(r.Direction, csentry, mventry, strValue);
                 }
                 r = null;
