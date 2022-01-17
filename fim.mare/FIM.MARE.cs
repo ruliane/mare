@@ -422,15 +422,28 @@ namespace FIM.MARE
                         }
                         else
                         {
-                            // TODO: if FromOtherConnector is defined, look for a CSEntry in this connector.
-                            Tracer.TraceError("FromOtherConnector is currently not implemented for Constant.");
+                            // Lookup csentry in other CS
+                            ConnectedMA ConnectedManagementAgent = mventry.ConnectedMAs[source.FromOtherConnector];
+                            if (ConnectedManagementAgent == null)
+                            {
+                                Tracer.TraceInformation("Unable to find external Connector {0}", source.FromOtherConnector);
+                                continue;
+                            }
+                            Tracer.TraceInformation("Found {0} connector(s) in MA {1}", ConnectedManagementAgent.Connectors.Count, source.FromOtherConnector);
+                            if (ConnectedManagementAgent.Connectors.Count > 0)
+                            {
+                                attr = ((Constant)source).Value;
+                            }
                         }
 
                         // Step 2: Apply Transforms on Source Attribute
                         // No transform on Constant
 
                         // Step 3: Add (transformed) value to list
-                        listTargetValue.Add(attr);
+                        if (!(string.IsNullOrEmpty(attr)))
+                        {
+                            listTargetValue.Add(attr);
+                        }
                     }
                 }
 
