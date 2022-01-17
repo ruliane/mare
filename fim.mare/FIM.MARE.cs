@@ -418,7 +418,7 @@ namespace FIM.MARE
                         string attr = "";
                         if (string.IsNullOrEmpty(source.FromOtherConnector))
                         {
-                            attr = source.ToString();
+                            attr = ((Constant)source).Value;
                         }
                         else
                         {
