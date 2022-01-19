@@ -13,14 +13,7 @@ namespace FIM.MARE
 		[XmlEnum(Name = "Delete")]
 		Delete,
 		[XmlEnum(Name = "ExplicitDisconnect")]
-		ExplicitDisconnect,
-		[XmlEnum(Name = "Disable")]
-		Disable,
-		[XmlEnum(Name = "Flag")]
-		Flag,
-		[XmlEnum(Name = "Move")]
-		Move,
-
+		ExplicitDisconnect
 	}
 
 	public class DeprovisionRule
@@ -34,9 +27,9 @@ namespace FIM.MARE
 		[XmlTextAttribute()]
 		public string Description { get; set; }
 
-		[XmlAttribute("Operation")]
+		[XmlAttribute("Action")]
 		[XmlTextAttribute()]
-		public DeprovisionOperation Operation { get; set; }
+		public DeprovisionOperation FinalAction { get; set; }
 
 		[XmlElement("Option")]
 		public List<DeprovisionOption> DeprovisionOptions { get; set; }
@@ -47,6 +40,7 @@ namespace FIM.MARE
 		}
 	}
 
+	[XmlInclude(typeof(FlowRuleDeprovisionOption)), XmlInclude(typeof(SetAttributeDeprovisionOption)), XmlInclude(typeof(MoveObjectDeprovisionOption))]
 	public class DeprovisionOption
 	{
 		[XmlAttribute("Name")]
@@ -58,16 +52,32 @@ namespace FIM.MARE
 		[XmlTextAttribute()]
 		public DeprovisionOperation Action { get; set; }
 
-		[XmlAttribute("TargetOU")]
-		public string TargetOU { get; set; }
-
-		[XmlAttribute("FlagMessage")]
-		public string FlagMessage { get; set; }
-
-		[XmlAttribute("FlagField")]
-		public string FlagField { get; set; }
-
 		[XmlElement("Conditions")]
 		public Conditions Conditions { get; set; }
+	}
+
+	public class SetAttributeDeprovisionOption : DeprovisionOption
+	{
+		[XmlAttribute("Attribute")]
+		public string AttributeName { get; set; }
+
+		[XmlAttribute("Message")]
+		public string Message { get; set; }
+	}
+
+	public class FlowRuleDeprovisionOption : DeprovisionOption
+	{
+		[XmlAttribute("FlowRule")]
+		public string FlowRuleName { get; set; }
+
+		[XmlAttribute("MVAttributeContainingDN")]
+		public string MVAttributeContainingDN { get; set; }
+	}
+
+	public class MoveObjectDeprovisionOption : DeprovisionOption
+	{
+		[XmlAttribute("NewContainer")]
+		public string NewContainer { get; set; }
+
 	}
 }

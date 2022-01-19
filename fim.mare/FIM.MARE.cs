@@ -32,13 +32,6 @@ namespace FIM.MARE
 
     public class RulesExtension : IMASynchronization
     {
-
-        const long ADS_UF_NORMAL_ACCOUNT = 0x200;
-        const long ADS_UF_ACCOUNTDISABLE = 0x2;
-        const long ADS_UF_PASSWD_NOTREQD = 0x0020;
-        const string USER_ACCOUNT_CONTROL_PROP = "userAccountControl";
-
-
         public Configuration config = null;
 
         public RulesExtension()
@@ -169,11 +162,11 @@ namespace FIM.MARE
 
         DeprovisionAction IMASynchronization.Deprovision(CSEntry csentry)
         {
-            Tracer.TraceWarning("enter-deprovision");
+            Tracer.TraceInformation("enter-deprovision");
             try
             {
                 string maName = csentry.MA.Name;
-                Tracer.TraceWarning($"ma: {maName}, dn: {csentry.DN}");
+                Tracer.TraceInformation($"ma: {maName}, dn: {csentry.DN}");
 
                 ManagementAgent ma = config.ManagementAgent.FirstOrDefault(m => m.Name.Equals(maName));
                 if (ma == null) throw new NotImplementedException("management-agent-" + maName + "-not-found");
@@ -182,7 +175,7 @@ namespace FIM.MARE
 
                 if (rule == null)
                 {
-                    Tracer.TraceWarning($"no-Deprovisioningrules-defined for {ma.Name} Disconnecting entry");
+                    Tracer.TraceWarning($"no-deprovisioningrules-defined for {ma.Name}. Disconnecting entry");
                     return DeprovisionAction.Disconnect;
                 }
 
@@ -194,25 +187,54 @@ namespace FIM.MARE
 
                 foreach (DeprovisionOption option in rule.DeprovisionOptions)
                 {
-                    Tracer.TraceWarning($"found-DeprovisionOption name: {option.Name}, description: {option.Description}, action : {option.Action}");
-                    
-                    switch (option.Action)
+                    Tracer.TraceWarning($"found-DeprovisionOption name: {option.Name} type: {option.GetType()}");
+
+                    if (option.GetType().Equals(typeof(SetAttributeDeprovisionOption)))
                     {
-                        case DeprovisionOperation.Disable:
-                            InvokeCsEntryDisable(csentry);
-                            break;
-                        case DeprovisionOperation.Flag:
-                            invokeCsEntryFlag(csentry, option);
-                            break;
-                        case DeprovisionOperation.Move:
-                            invokeCsEntryMove(csentry, option);
-                            break;
-                        default:
-                            Tracer.TraceError("No action, disconnecting");
-                            break;
+                        InvokeCsEntrySetAttribute(csentry, (SetAttributeDeprovisionOption)option);
+                    }
+                    else if (option.GetType().Equals(typeof(FlowRuleDeprovisionOption)))
+                    {
+                        string MVAttributeContainingDN = ((FlowRuleDeprovisionOption)option).MVAttributeContainingDN;
+                        if (string.IsNullOrWhiteSpace(MVAttributeContainingDN))
+                        {
+                            throw new Exception("MVAttributeContainingDN-not-defined");
+                        }
+
+                        // Get FlowRule
+                        FlowRule fr = ma.FlowRule.FirstOrDefault(m => m.Name.Equals(option.Name));
+                        if (fr == null) throw new NotImplementedException("FlowRule-not-found: " + (option.Name));
+                        Tracer.TraceWarning("FlowRule-found {0}", 1, fr.Name);
+
+                        // Look for MVEntry
+                        Tracer.TraceWarning("Looking for MVEntry with {0} = {1}", 1, MVAttributeContainingDN, csentry.DN);
+                        MVEntry mventry = Utils.FindMVEntries(MVAttributeContainingDN, csentry.DN.ToString()).FirstOrDefault();
+                        
+                        // Invoke Flow Rule
+                        InvokeFlowRule(fr, csentry, mventry);
+                    }
+                    else if (option.GetType().Equals(typeof(MoveObjectDeprovisionOption)))
+                    {
+                        string NewContainer = ((MoveObjectDeprovisionOption)option).NewContainer;
+                        if (string.IsNullOrWhiteSpace(NewContainer))
+                        {
+                            throw new InvalidDNException("NewContainer-not-defined");
+                        }
+                        ReferenceValue ExpectedDN;
+                        ExpectedDN = csentry.MA.EscapeDNComponent(csentry.RDN).Concat(NewContainer);
+                        Tracer.TraceInformation("Setting new DN: {0}", ExpectedDN.ToString());
+                        csentry.DN = ExpectedDN;
+                    }
+                    else
+                    {
+                        Tracer.TraceError("Action-unknown: {0}", option.GetType());
+                        //break;
                     }
                 }
-                return DeprovisionAction.Disconnect;
+
+                DeprovisionAction a = FromOperation(rule.FinalAction);
+                Tracer.TraceWarning("Returning final result {0}", 1, a.ToString());
+                return a;
             }
             catch (Exception ex)
             {
@@ -226,6 +248,7 @@ namespace FIM.MARE
 
         }
 
+        /*
         public DeprovisionAction InvokeCsEntryDisable(CSEntry csentry)
         {
             Tracer.TraceWarning($"disabling account {csentry}");
@@ -242,13 +265,14 @@ namespace FIM.MARE
 
             return FromOperation(DeprovisionOperation.Disable);
         }
+        */
 
-        public DeprovisionAction invokeCsEntryFlag(CSEntry csentry, DeprovisionOption o)
+        public void InvokeCsEntrySetAttribute(CSEntry csentry, SetAttributeDeprovisionOption o)
         {
             try
             {
-                var message = o.FlagMessage;
-                if (string.IsNullOrEmpty(o.FlagField))
+                var message = o.Message;
+                if (string.IsNullOrEmpty(o.AttributeName))
                 {
                     Tracer.TraceError($"Flag option {o.Name} missing target field");
                 }
@@ -258,17 +282,20 @@ namespace FIM.MARE
                     message = $"Account flagged by MIM on {DateTime.Now.ToString("yyyy-MM-dd")}";
                 }
 
-                csentry[o.FlagField].Value = message + " " + DateTime.Now.ToString("yyyy-MM-dd");
+                //csentry[o.AttributeName].Value = message + " " + DateTime.Now.ToString("yyyy-MM-dd");
+                Tracer.TraceInformation("Setting {0} to {1}", 1, o.AttributeName, o.Message);
+                csentry[o.AttributeName].Value = message;
             }
             catch (Exception ex)
             {
-                Tracer.TraceError($"Error flagging account {ex.Message}");
+                Tracer.TraceError($"Error flagging account: {ex.Message}");
                 throw;
             }
 
-            return FromOperation(DeprovisionOperation.Flag);
+            return;
         }
 
+        /*
         public DeprovisionAction invokeCsEntryMove(CSEntry csentry, DeprovisionOption o)
         {
             Tracer.TraceWarning($"Actual OU for CSEntry : {csentry.DN.ToString()}");
@@ -280,6 +307,7 @@ namespace FIM.MARE
 
             return FromOperation(DeprovisionOperation.Move);
         }
+        */
 
         public void MapAttributesForImportExportDetached(string FlowRuleName, CSEntry csentry, MVEntry mventry, Direction direction)
         {

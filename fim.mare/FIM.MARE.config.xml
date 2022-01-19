@@ -4,12 +4,12 @@
     <XmlFile Name="CountryCodes" Path="C:\temp\CountryCodes.xml" />
   </ExternalFiles>
 	
-  <ManagementAgent Name="AD2">
+  <ManagementAgent Name="ad">
 
-    <DeprovisionRule Name="DisableAndFlagDeletedAccount" Description="Desactivation et flag suite suppression">
-		<Option Name="DisableAccount" Action="Disable" Description="Desactivation du compte"/>
-		<Option Name="FlagAccount" Action="Flag" FlagMessage="Account disabled by MIM" FlagField="description" Description="Ajout d'un flag sur le compte"/>
-		<Option Name="MoveToNewOU" Action="Move" TargetOU ="OU=Disabled users,DC=ad2,DC=local" Description="Changement d'OU pour le compte"/>
+    <DeprovisionRule Name="DisableAndFlagDeletedAccount" Action="Disconnect">
+		<Option xsi:type="SetAttributeDeprovisionOption" Name="MarkAsDeleted" Attribute="description" Message="Account disabled by MIM" />
+		<Option xsi:type="FlowRuleDeprovisionOption" Name="UserAccountControl" MVAttributeContainingDN="ADDN" />
+		<Option xsi:type="MoveObjectDeprovisionOption" Name="MoveToNewOU" NewContainer="OU=Disabled users,DC=ad2,DC=local" />
 	</DeprovisionRule>
 
 
