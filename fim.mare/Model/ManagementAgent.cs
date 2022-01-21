@@ -40,7 +40,7 @@ namespace FIM.MARE
 			{
 				return;
 			}
-			Tracer.TraceInformation("enter-loadassembly");
+			Tracer.TraceWarning("enter-loadassembly");
 			try
 			{
 				{
