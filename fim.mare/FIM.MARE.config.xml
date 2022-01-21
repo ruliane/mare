@@ -6,24 +6,12 @@
 	
   <ManagementAgent Name="ad">
 
-    <Deprovision DefaultAction="Disconnect">
+    <DeprovisionRule Name="DisableAndFlagDeletedAccount" Action="Disconnect">
+		<Option xsi:type="SetAttributeDeprovisionOption" Name="MarkAsDeleted" Attribute="description" Message="Account disabled by MIM" />
+		<Option xsi:type="FlowRuleDeprovisionOption" Name="UserAccountControl" MVAttributeContainingDN="ADDN" />
+		<Option xsi:type="MoveObjectDeprovisionOption" Name="MoveToNewOU" NewContainer="OU=Disabled users,DC=ad2,DC=local" />
+	</DeprovisionRule>
 
-      <Rule Name="Delete expired accounts" Action="Delete">
-        <Description></Description>
-        <Conditions Operator="Or">
-          <Condition xsi:type="ObjectClassMatch" Source="CSEntry" Pattern="^person$" />
-          <Condition xsi:type="SubCondition" Operator="And">
-            <Condition xsi:type="SourceValueMatch" Source="MVEntry" AttributeName="company" Pattern="^Sales|Purchase$" />
-            <Condition xsi:type="SourceValueMatch" Source="MVEntry" AttributeName="city" Pattern="^Beijing|New York$" />
-          </Condition>
-        </Conditions>
-      </Rule>
-
-      <Rule Name="Disconnect others" Action="Disconnect">
-        <Description></Description>
-      </Rule>
-
-    </Deprovision>
 
     <JoinRule Name="CleanAccountName">
       <SourceExpression>
@@ -35,7 +23,7 @@
       </SourceExpression>
     </JoinRule>
 
-		<FlowRule Name="UserAccountControl" Direction="Export" xsi:type="FlowRule">
+	  <FlowRule Name="UserAccountControl" Direction="Export" xsi:type="FlowRule">
 			<Conditions Operator="And">
 				<Condition xsi:type="SourceValueMatch" Source="MVEntry" AttributeName="accountName" Pattern="^SG$" />
 			</Conditions>
