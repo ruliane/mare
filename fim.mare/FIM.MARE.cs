@@ -232,9 +232,7 @@ namespace FIM.MARE
                     }
                 }
 
-                DeprovisionAction a = FromOperation(rule.FinalAction);
-                Tracer.TraceWarning("Returning final result {0}", 1, a.ToString());
-                return a;
+                return FromOperation(rule.FinalAction);
             }
             catch (Exception ex)
             {
@@ -247,25 +245,6 @@ namespace FIM.MARE
             }
 
         }
-
-        /*
-        public DeprovisionAction InvokeCsEntryDisable(CSEntry csentry)
-        {
-            Tracer.TraceWarning($"disabling account {csentry}");
-            long currentValue = ADS_UF_NORMAL_ACCOUNT;
-            if (csentry[USER_ACCOUNT_CONTROL_PROP].IsPresent)
-            {
-                currentValue = csentry[USER_ACCOUNT_CONTROL_PROP].IntegerValue;
-                csentry[USER_ACCOUNT_CONTROL_PROP].IntegerValue = currentValue | ADS_UF_ACCOUNTDISABLE;// | ADS_UF_PASSWD_NOTREQD;
-            }
-            else
-            {
-                Trace.TraceError("userAccountControlProp not present in connector space");
-            }           
-
-            return FromOperation(DeprovisionOperation.Disable);
-        }
-        */
 
         public void InvokeCsEntrySetAttribute(CSEntry csentry, SetAttributeDeprovisionOption o)
         {

@@ -23,7 +23,7 @@
       </SourceExpression>
     </JoinRule>
 
-	<FlowRule Name="UserAccountControl" Direction="Export" xsi:type="FlowRule">
+	  <FlowRule Name="UserAccountControl" Direction="Export" xsi:type="FlowRule">
 			<Conditions Operator="And">
 				<Condition xsi:type="SourceValueMatch" Source="MVEntry" AttributeName="accountName" Pattern="^SG$" />
 			</Conditions>
