@@ -10,4 +10,4 @@ FIM.MARE reads declared flow rules from an XML configuration file which contains
 This fork implements the following improvements:
 - Ability to get attributes from multiple connectors
 - Support for multi-valued target attributes
-- Custom deprovisionning (work in progress)
+- Custom deprovisionning
