@@ -11,3 +11,4 @@ This fork implements the following improvements:
 - Ability to get attributes from multiple connectors
 - Support for multi-valued target attributes
 - Custom deprovisionning
+- Custom filtering (based on conditions, similarly to Transforms)
