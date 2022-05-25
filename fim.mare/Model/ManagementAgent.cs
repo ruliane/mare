@@ -19,6 +19,8 @@ namespace FIM.MARE
 		public string Name { get; set; }
 		[XmlElement("CustomDLL")]
 		public string CustomDLL { get; set; }
+        [XmlElement("FilterForDisconnectionRule")]
+		public List<FilterForDisconnectionRule> FilterForDisconnectionRule { get; set; }
 		[XmlElement("FlowRule")]
 		public List<FlowRule> FlowRule { get; set; }
         [XmlElement("JoinRule")]

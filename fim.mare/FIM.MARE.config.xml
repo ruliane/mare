@@ -6,6 +6,11 @@
 	
   <ManagementAgent Name="ad">
 
+	  <FilterForDisconnectionRule ObjectType="person"">
+			<Conditions Operator="And">
+				<Condition xsi:type="SourceValueMatch" Source="CSEntry" AttributeName="employeeId" Pattern="^0[0-9]{3}$" />
+			</Conditions>
+	  </FilterForDisconnectionRule>
     <DeprovisionRule Name="DisableAndFlagDeletedAccount" Action="Disconnect">
 		<Option xsi:type="SetAttributeDeprovisionOption" Name="MarkAsDeleted" Attribute="description" Message="Account disabled by MIM" />
 		<Option xsi:type="FlowRuleDeprovisionOption" Name="UserAccountControl" MVAttributeContainingDN="ADDN" />

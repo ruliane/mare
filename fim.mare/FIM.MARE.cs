@@ -92,15 +92,31 @@ namespace FIM.MARE
             }
         }
 
-        #region not implemented
         bool IMASynchronization.ShouldProjectToMV(CSEntry csentry, out string MVObjectType)
         {
             throw new EntryPointNotImplementedException();
         }
 
+        /* Entry point called by CSEntry filtering */
         bool IMASynchronization.FilterForDisconnection(CSEntry csentry)
         {
-            throw new EntryPointNotImplementedException();
+            Tracer.TraceInformation("enter-FilterForDisconnection");
+
+            string maName = csentry.MA.Name;
+            string objectType = csentry.ObjectType;
+            Tracer.TraceInformation("csentry: dn: {0}, ma: {1}", csentry.DN, maName);
+
+            ManagementAgent ma = config.ManagementAgent.FirstOrDefault(m => m.Name.Equals(maName));
+            if (ma == null)
+                throw new NotImplementedException("management-agent-" + maName + "-not-found");
+
+            FilterForDisconnectionRule rule = ma.FilterForDisconnectionRule.FirstOrDefault(r => r.ObjectType.Equals(objectType));
+
+            if (rule == null)
+                throw new DeclineMappingException("rule-" + objectType + "-not-found-on-ma-" + maName);
+
+            return rule.Conditions.AreMet(csentry, null);
+
         }
         void IMASynchronization.MapAttributesForJoin(string FlowRuleName, CSEntry csentry, ref ValueCollection values)
         {
@@ -143,7 +159,6 @@ namespace FIM.MARE
         {
             throw new EntryPointNotImplementedException();
         }
-        #endregion
 
         DeprovisionAction FromOperation(DeprovisionOperation operation)
         {
@@ -350,6 +365,7 @@ namespace FIM.MARE
         {
             this.MapAttributesForImportExportDetached(FlowRuleName, csentry, mventry, Direction.Export);
         }
+
 
         public void InvokeMapJoinRule(JoinRule rule, CSEntry csentry, ref ValueCollection values)
         {
