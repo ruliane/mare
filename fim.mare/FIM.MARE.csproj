@@ -25,7 +25,7 @@
     <FileUpgradeFlags />
     <MyType>Windows</MyType>
     <UpgradeBackupLocation />
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -102,6 +102,7 @@
     <Compile Include="Model\Conditions\Condition.IsPresent.cs" />
     <Compile Include="Model\Configuration.cs" />
     <Compile Include="Model\ConfigurationManager.cs" />
+    <Compile Include="Model\FilterForDisconnectionRule.cs" />
     <Compile Include="Model\JoinRule.cs" />
     <Compile Include="Model\ExternalFiles.cs" />
     <Compile Include="Model\DeprovisionRule.cs" />
