@@ -459,11 +459,24 @@ namespace FIM.MARE
                             Tracer.TraceInformation("Applying transforms on source MultiValueAttribute...");
                             Object concateValue = source.Transform(val, TransformDirection.Source);
 
+                            /* Tracer.TraceInformation("IsEnum: {0}, {1}, {2}, {3}, {4}", 
+                                typeof(System.Collections.IEnumerable).IsAssignableFrom(concateValue.GetType()), 
+                                typeof(System.Collections.IList).IsAssignableFrom(concateValue.GetType()), 
+                                concateValue.GetType().IsEnum,
+                                concateValue is System.Collections.IEnumerable,
+                                (concateValue as System.Collections.IEnumerable != null)
+                            ); */
+                            
                             // Step 3: Add (transformed) value to list
                             Tracer.TraceInformation("Appending values to target attribute...");
-                            foreach (string item in ((ValueCollection)concateValue).ToStringArray())
+                            // After Transform, concateValue can still be a list but it's not guaranteed. Let's check that.
+                            if (!(concateValue is System.Collections.IEnumerable) || concateValue is string)
                             {
-                                listTargetValue.Add(item);
+                                listTargetValue.Add(concateValue);
+                            }
+                            else
+                            {
+                                listTargetValue.AddRange(((ValueCollection)concateValue).ToStringArray());
                             }
                         }
                         else
