@@ -1,7 +1,4 @@
-﻿// feb 10, 2016 | soren granfeldt
-//	-added Description attribute to flowrule to allow for better logging information
-
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace FIM.MARE
 {

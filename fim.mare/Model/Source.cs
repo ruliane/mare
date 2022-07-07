@@ -1,10 +1,3 @@
-// october 16, 2015 | soren granfeldt
-//	-added support for updating multivalues
-//	-added multivalue attribute type
-// januar 28, 2016 | soren granfeldt
-//	-fixed two bugs for export flows in SetTargetValue (using mventry instead of csentry) and added .clear for multivalues
-//	-fixed FromValueCollection to handle single value flowed to multivalued
-
 using Microsoft.MetadirectoryServices;
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,4 @@
-﻿// apr 4, 2018 | soren granfeldt
-//	-added JoinRule
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace FIM.MARE

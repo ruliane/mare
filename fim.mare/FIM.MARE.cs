@@ -1,25 +1,3 @@
-// jan 10, 2015 | soren granfeldt
-//  - initial version started
-// jan 20, 2015 | soren granfeldt
-//  - added transforms
-//  - extended trace events
-// jan 25, 2015 | soren granfeldt
-//  - added conditions and started externals
-// jan 26, 2015 | soren granfeldt
-//  - added BitIsSet and BitIsNotSet flow rules
-//  - added support for copying and renaming DLL and reading corresponding configuration file
-// jan 29, 2015 | soren granfeldt
-//  - reduced number of rules and made more generic by moving fuctionality to Transforms instead
-// feb 4, 2015 | soren granfeldt
-//  - fixed bug in date conversion transform
-// oct 16, 2015 | soren granfeldt
-//	- added static tracer through project
-//	- added logging of version information to instantiation function
-// feb 10, 2016 | soren granfeldt
-//	- added logging of flowrule description for better debugging when more than one rule with same name
-// september 26, 2018 | soren granfeldt
-//	- added catch to handle DeclineMappingException more gracefully (will no show information instead of logging error / fill eventlog)
-
 using Microsoft.MetadirectoryServices;
 using System;
 using System.Collections.Generic;

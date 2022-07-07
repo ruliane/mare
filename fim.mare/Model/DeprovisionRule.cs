@@ -1,7 +1,4 @@
-﻿// feb 16, 2016 | soren granfeldt
-//	-added Deprovision class to prepare for deprov rules
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace FIM.MARE
