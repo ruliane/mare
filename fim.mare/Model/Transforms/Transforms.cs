@@ -30,6 +30,7 @@ namespace FIM.MARE
         XmlInclude(typeof(Replace)),
         XmlInclude(typeof(PadLeft)),
         XmlInclude(typeof(PadRight)),
+        XmlInclude(typeof(PrefixSuffix)),
         XmlInclude(typeof(RegexReplace)),
         XmlInclude(typeof(Substring)),
         XmlInclude(typeof(RegexSelect)),
