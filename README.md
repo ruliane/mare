@@ -12,3 +12,4 @@ This fork implements the following improvements:
 - Support for multi-valued target attributes
 - Custom deprovisionning
 - Custom filtering (based on conditions, similarly to Transforms)
+- New "Transforms" : PrefixSuffix
