@@ -114,7 +114,7 @@
     <Compile Include="Model\Transforms\Transform.LookupMVValue.cs" />
     <Compile Include="Model\Transforms\Transform.FormatDate.cs" />
     <Compile Include="Model\Transforms\Transform.IsBeforeOrAfter.cs" />
-    <Compile Include="Model\Transforms\Transform.MultivalueConcatenate.cs" />
+    <Compile Include="Model\Transforms\Transform.MultiValueConcatenate.cs" />
     <Compile Include="Model\Transforms\Transform.MultiValueRemoveIfNotMatch.cs" />
     <Compile Include="Model\Transforms\Transform.MultiValueRemoveIfMatch.cs" />
     <Compile Include="Model\Transforms\Transform.ConvertFromTrueFalse.cs" />
