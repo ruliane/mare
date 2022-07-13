@@ -6,7 +6,7 @@ It enables FIM administrators to, declaratively, create advanced flow rules with
 FIM.MARE reads declared flow rules from an XML configuration file which contains information about the management agent rules available.
 
 
-# Differences with the original project (sorengranfeldt/mare)
+# Differences with the original project ([sorengranfeldt/mare](https://github.com/sorengranfeldt/mare))
 This fork implements the following improvements:
 - Ability to get attributes from multiple connectors
 - Support for multi-valued target attributes
