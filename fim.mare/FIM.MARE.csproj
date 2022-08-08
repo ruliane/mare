@@ -90,6 +90,8 @@
     <Compile Include="FIM.MARE.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\Conditions\Condition.IsBitNotSetCondition.cs" />
+    <Compile Include="Model\Conditions\Condition.IsBitSetCondition.cs" />
     <Compile Include="Model\Conditions\Condition.IsNotPresent.cs" />
     <Compile Include="Model\Conditions\Condition.NotConnectedTo.cs" />
     <Compile Include="Model\Conditions\Condition.ConnectedTo.cs" />

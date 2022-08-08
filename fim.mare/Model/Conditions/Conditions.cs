@@ -26,6 +26,8 @@ namespace FIM.MARE
         XmlInclude(typeof(SourceValueNotMatch)),
         XmlInclude(typeof(TargetValueMatch)),
         XmlInclude(typeof(SubCondition)),
+        XmlInclude(typeof(IsBitSetCondition)),
+        XmlInclude(typeof(IsBitNotSetCondition)),
         XmlInclude(typeof(IsPresent)),
         XmlInclude(typeof(IsNotPresent)),
         XmlInclude(typeof(ConnectedTo)),

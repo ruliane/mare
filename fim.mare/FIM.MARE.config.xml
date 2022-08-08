@@ -31,6 +31,7 @@
 	  <FlowRule Name="UserAccountControl" Direction="Export" xsi:type="FlowRule">
 			<Conditions Operator="And">
 				<Condition xsi:type="SourceValueMatch" Source="MVEntry" AttributeName="accountName" Pattern="^SG$" />
+				<Condition xsi:type="IsBitNotSetCondition" Source="CSEntry" AttributeName="userAccountControl" BitPosition="2" />
 			</Conditions>
 			<SourceExpression>
 				<Source Name="userAccountControl" xsi:type="Attribute" RetrieveFrom="CS">
