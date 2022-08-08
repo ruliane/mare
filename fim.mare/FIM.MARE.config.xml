@@ -6,7 +6,7 @@
 	
   <ManagementAgent Name="ad">
 
-	  <FilterForDisconnectionRule ObjectType="person"">
+	  <FilterForDisconnectionRule ObjectType="person">
 			<Conditions Operator="And">
 				<Condition xsi:type="SourceValueMatch" Source="CSEntry" AttributeName="employeeId" Pattern="^0[0-9]{3}$" />
 			</Conditions>
