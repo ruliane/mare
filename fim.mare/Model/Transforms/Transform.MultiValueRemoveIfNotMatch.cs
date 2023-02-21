@@ -16,7 +16,7 @@ namespace FIM.MARE
             List<object> returnValues = new List<object>();
             foreach (object val in values)
             {
-                if (Regex.IsMatch(val.ToString(), this.Pattern, RegexOptions.IgnoreCase))
+                if (!Regex.IsMatch(val.ToString(), this.Pattern, RegexOptions.IgnoreCase))
                 {
                     Tracer.TraceInformation("removing-value {0}", val);
                 }
