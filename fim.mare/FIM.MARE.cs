@@ -180,7 +180,7 @@ namespace FIM.MARE
 
                 foreach (DeprovisionOption option in rule.DeprovisionOptions)
                 {
-                    Tracer.TraceWarning($"found-DeprovisionOption name: {option.Name} type: {option.GetType()}");
+                    Tracer.TraceInformation($"found-DeprovisionOption name: {option.Name} type: {option.GetType()}");
 
                     if (option.GetType().Equals(typeof(SetAttributeDeprovisionOption)))
                     {
@@ -197,10 +197,10 @@ namespace FIM.MARE
                         // Get FlowRule
                         FlowRule fr = ma.FlowRule.FirstOrDefault(m => m.Name.Equals(option.Name));
                         if (fr == null) throw new NotImplementedException("FlowRule-not-found: " + (option.Name));
-                        Tracer.TraceWarning("FlowRule-found {0}", 1, fr.Name);
+                        Tracer.TraceInformation("FlowRule-found {0}", 1, fr.Name);
 
                         // Look for MVEntry
-                        Tracer.TraceWarning("Looking for MVEntry with {0} = {1}", 1, MVAttributeContainingDN, csentry.DN);
+                        Tracer.TraceInformation("Looking for MVEntry with {0} = {1}", 1, MVAttributeContainingDN, csentry.DN);
                         MVEntry mventry = Utils.FindMVEntries(MVAttributeContainingDN, csentry.DN.ToString()).FirstOrDefault();
                         
                         // Invoke Flow Rule
@@ -456,7 +456,6 @@ namespace FIM.MARE
                             {
                                 foreach (object v in (System.Collections.IEnumerable)concateValue)
                                 {
-                                    Tracer.TraceWarning("element : {0}", 1, v.ToString());
                                     listTargetValue.Add(v.ToString());
                                 }
                             }
@@ -566,13 +565,8 @@ namespace FIM.MARE
                 if (rule.Direction == Direction.Import && mventry[r.Target.Name].IsMultivalued || 
                     rule.Direction == Direction.Export && csentry[r.Target.Name].IsMultivalued)
                 {
-                    Tracer.TraceWarning("Committing values {1} to target attribute {0}...", 1, r.Target.Name, listTargetValue);
-                    foreach (object o in listTargetValue)
-                    {
-                        Tracer.TraceWarning("element: {0}", 1, o);
-                    }
+                    Tracer.TraceInformation("Committing values {1} to target attribute {0}...", r.Target.Name, listTargetValue);
                     r.Target.SetTargetValue(r.Direction, csentry, mventry, listTargetValue);
-                    Tracer.TraceWarning("ok");
                 }
                 else
                 {
