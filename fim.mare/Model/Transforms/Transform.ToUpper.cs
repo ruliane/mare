@@ -10,17 +10,19 @@ namespace FIM.MARE
             {
                 return string.IsNullOrEmpty(value as string) ? value : value.ToString().ToUpper();
             }
-            else if (value.GetType() == typeof(List<object>))
+            else if (value is System.Collections.IEnumerable)
             {
                 List<object> result = new List<object>();
-                for (int i = 0; i < ((List<object>)value).Count; i++)
+                foreach (object o in (System.Collections.IEnumerable)value)
                 {
-                    result.Add(((List<object>)value)[i].ToString().ToUpper());
+                    result.Add(o.ToString().ToUpper());
                 }
                 return result;
             }
-
-            return value;
+            else
+            {
+                return value;
+            }
         }
     }
 }
