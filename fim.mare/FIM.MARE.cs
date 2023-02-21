@@ -434,7 +434,7 @@ namespace FIM.MARE
                         if (val != null)
                         {
                             // Step 2: Apply Transforms on Source Attribute
-                            Tracer.TraceInformation("Applying transforms on source MultiValueAttribute...");
+                            Tracer.TraceInformation("Applying transforms on source MultiValueAttribute");
                             Object concateValue = source.Transform(val, TransformDirection.Source);
 
                             /* Tracer.TraceInformation("IsEnum: {0}, {1}, {2}, {3}, {4}", 
@@ -444,7 +444,7 @@ namespace FIM.MARE
                                 concateValue is System.Collections.IEnumerable,
                                 (concateValue as System.Collections.IEnumerable != null)
                             ); */
-                            
+
                             // Step 3: Add (transformed) value to list
                             Tracer.TraceInformation("Appending values to target attribute...");
                             // After Transform, concateValue can still be a list but it's not guaranteed. Let's check that.
@@ -454,7 +454,11 @@ namespace FIM.MARE
                             }
                             else
                             {
-                                listTargetValue.AddRange(((ValueCollection)concateValue).ToStringArray());
+                                foreach (object v in (System.Collections.IEnumerable)concateValue)
+                                {
+                                    Tracer.TraceWarning("element : {0}", 1, v.ToString());
+                                    listTargetValue.Add(v.ToString());
+                                }
                             }
                         }
                         else
@@ -553,7 +557,7 @@ namespace FIM.MARE
                     Tracer.TraceInformation("Target is monovalued, concatenating values.");
                     foreach (object targetValue in listTargetValue)
                     {
-                        strValue += targetValue.ToString(); // target Value or targetValue.toString() ?
+                        strValue += targetValue.ToString();
                     }
                     //listTargetValue = strValue;
                 }
@@ -562,9 +566,13 @@ namespace FIM.MARE
                 if (rule.Direction == Direction.Import && mventry[r.Target.Name].IsMultivalued || 
                     rule.Direction == Direction.Export && csentry[r.Target.Name].IsMultivalued)
                 {
-                    Tracer.TraceInformation("Committing values {1} to target attribute {0}...", r.Target.Name, listTargetValue);
+                    Tracer.TraceWarning("Committing values {1} to target attribute {0}...", 1, r.Target.Name, listTargetValue);
+                    foreach (object o in listTargetValue)
+                    {
+                        Tracer.TraceWarning("element: {0}", 1, o);
+                    }
                     r.Target.SetTargetValue(r.Direction, csentry, mventry, listTargetValue);
-
+                    Tracer.TraceWarning("ok");
                 }
                 else
                 {
