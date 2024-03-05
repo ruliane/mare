@@ -117,10 +117,12 @@
     <Compile Include="Model\Transforms\Transform.FormatDate.cs" />
     <Compile Include="Model\Transforms\Transform.IsBeforeOrAfter.cs" />
     <Compile Include="Model\Transforms\Transform.MultiValueConcatenate.cs" />
+    <Compile Include="Model\Transforms\Transform.MultiValueAnd.cs" />
     <Compile Include="Model\Transforms\Transform.MultiValueRemoveIfNotMatch.cs" />
     <Compile Include="Model\Transforms\Transform.MultiValueRemoveIfMatch.cs" />
     <Compile Include="Model\Transforms\Transform.ConvertFromTrueFalse.cs" />
     <Compile Include="Model\Transforms\Transform.MultiValueReplace.cs" />
+    <Compile Include="Model\Transforms\Transform.MultiValueOr.cs" />
     <Compile Include="Model\Transforms\Transform.PrefixSuffix.cs" />
     <Compile Include="Model\Transforms\Transform.StringFormat.cs" />
     <Compile Include="Model\Transforms\Transform.StringCase.cs" />
